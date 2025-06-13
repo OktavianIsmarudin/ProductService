@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  product-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: product-service
+    environment:
+      DB_HOST: product-db
+      DB_DATABASE: productdb
+      DB_USERNAME: productuser
+      DB_PASSWORD: productpass
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - product-db
+    networks:
+      - app-network
+
+  product-nginx:
+    image: nginx:latest
+    container_name: product-nginx
+    ports:
+      - "8002:80"
+    volumes:
+      - ./:/var/www/html:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - product-service
+    networks:
+      - app-network
+
+  product-db:
+    image: mysql:8.0
+    container_name: product-db
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: productdb
+      MYSQL_USER: productuser
+      MYSQL_PASSWORD: productpass
+    volumes:
+      - product-db-data:/var/lib/mysql
+    networks:
+      - app-network
+
+
+  rabbitmq:
+    image: rabbitmq:3-management 
+    container_name: rabbitmq-product
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5673:5672"
+      - "15673:15672"
+    networks:
+      - app-network
+
+volumes:
+  product-db-data:
+
+networks:
+  app-network:
+    external: true

@@ -10,7 +10,7 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <div class="container">
-        <a class="navbar-brand" href="/">Vian,Faiq,Desy</a>
+        <a class="navbar-brand" href="/">Home</a>
     </div>
 </nav>
 
